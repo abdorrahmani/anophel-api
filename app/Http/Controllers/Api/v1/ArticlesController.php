@@ -25,7 +25,7 @@ class ArticlesController extends Controller
 
     public function show(Article $article): ArticlesResource
     {
-        return new ArticlesResource($article);
+        return new ArticlesResource($article->load('user'));
     }
 
 //    public function update(Request $request, Article $articles)
