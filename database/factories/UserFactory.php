@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\UserInfo;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -41,4 +43,12 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+    public function configure()
+    {
+        return $this->afterCreating(function (User $user) {
+            $user->userInfo()->save(UserInfo::factory()->make());
+        });
+    }
+
+
 }

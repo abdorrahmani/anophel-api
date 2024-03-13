@@ -20,6 +20,19 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
+
+        Schema::create('user_infos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->unsigned()->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->string('avatar')->nullable();
+            $table->string('address')->nullable();
+            $table->string('birthday')->nullable();
+            $table->string('tel')->nullable();
+            $table->boolean('tel_verified')->default(false);
+            $table->longText('bio')->nullable();
+            $table->timestamps();
+        });
+
     }
 
     /**
@@ -28,5 +41,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+        Schema::dropIfExists('user_infos');
     }
 };
