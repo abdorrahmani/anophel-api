@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticlesResource;
 use App\Models\Article;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use OpenApi\Annotations as OA;
 
 class ArticlesController extends Controller
@@ -54,7 +57,6 @@ class ArticlesController extends Controller
      *                  @OA\Property(property="poster", type="string", format="binary"),
      *                  @OA\Property(property="body", type="string", example="This is a sample article body."),
      *                  @OA\Property(property="category_id", type="integer", example=1),
-     *                  @OA\Property(property="token", type="string", example="YOUR_JWT_TOKEN_HERE")
      *              )
      *          )
      *     ),
@@ -89,7 +91,7 @@ class ArticlesController extends Controller
 
         // Create the article
         $article = Article::create([
-            'user_id' => auth()->user()->id, // Assuming user is authenticated
+            'user_id' => auth()->id(), // Assuming user is authenticated
             'title' => $validatedData['title'],
             'slug' => $validatedData['slug'],
             'poster' => $posterPath,
@@ -106,15 +108,15 @@ class ArticlesController extends Controller
 
     /**
      * @param Article $article
-     * @return ArticlesResource
      *
+     * @return Application|ResponseFactory|\Illuminate\Foundation\Application|Response
      * @OA\Get(
-     *       path="/api/v1/articles/{id}",
+     *       path="/api/v1/articles/{article}",
      *       summary="Get a list of articles",
      *       description="get a list of articles with using pagination",
      *       tags={"Articles"},
      *@OA\Parameter(
-     *           name="id",
+     *           name="article",
      *           in="path",
      *           description="article's id",
      *           required=true,
@@ -124,26 +126,90 @@ class ArticlesController extends Controller
      *       @OA\Response(response=400, description="Invalid request")
      *   )
      */
-    public function show(Article $article): ArticlesResource
+    public function show(Article $article)
     {
         return response(new ArticlesResource($article->load('user')), 200);
     }
 
-//    public function update(Request $request, Article $articles)
-//    {
-//        $data = $request->validate([
-//
-//        ]);
-//
-//        $articles->update($data);
-//
-//        return new ArticlesResource($articles);
-//    }
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  ArticleRequest  $request
+     * @param  Article  $article
+     * @return JsonResponse
+     *
+     * @OA\Post(
+     *     path="/api/v1/articles/{article}",
+     *     tags={"Articles"},
+     *     summary="Update an existing article",
+     *     operationId="updateArticle",
+     *     @OA\Parameter(
+     *         name="article",
+     *         in="path",
+     *         description="ID of the article to update",
+     *         required=true,
+     *        @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(property="_method", type="string", example="PATCH"),
+     *                 @OA\Property(property="title", type="string", example="Updated Title"),
+     *                 @OA\Property(property="slug", type="string", example="updated-title"),
+     *                 @OA\Property(property="poster", type="string", format="binary"),
+     *                 @OA\Property(property="body", type="string", example="This is an updated article body."),
+     *                 @OA\Property(property="category_id", type="integer", example=1),
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Article updated successfully",
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Article not found",
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object", example={"title": {"The title field is required."}})
+     *         )
+     *     ),
+     *     security={{"bearerAuth": {}}}
+     * )
+ */
 
-//    public function destroy(Article $articles)
-//    {
-//        $articles->delete();
-//
-//        return response()->json();
-//    }
+    public function update(ArticleRequest $request, Article $article): JsonResponse
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validated();
+        // Update the article's data
+        if ($request->hasFile('poster')) {
+            // Handle file upload for the article's poster
+            $posterPath = $request->file('poster')->store('posters', 'public');
+            // Update poster path if a new poster is uploaded
+            $article->poster = $posterPath;
+        }
+
+        $article->title = $validatedData['title'];
+        $article->slug = $validatedData['slug'];
+        $article->body = $validatedData['body'];
+        $article->save();
+
+        // Sync categories with the article
+        $article->categories()->sync($validatedData['category_id']);
+
+        // Return a success response
+        return response()->json(['message' => 'Article updated successfully'], 200);
+    }
+
+    public function destroy(Article $articles): JsonResponse
+    {
+        return response()->json($articles);
+    }
 }

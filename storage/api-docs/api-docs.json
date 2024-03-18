@@ -55,10 +55,6 @@
                                     "category_id": {
                                         "type": "integer",
                                         "example": 1
-                                    },
-                                    "token": {
-                                        "type": "string",
-                                        "example": "YOUR_JWT_TOKEN_HERE"
                                     }
                                 },
                                 "type": "object"
@@ -102,17 +98,17 @@
                 ]
             }
         },
-        "/api/v1/articles/{id}": {
+        "/api/v1/articles/{article}": {
             "get": {
                 "tags": [
                     "Articles"
                 ],
                 "summary": "Get a list of articles",
                 "description": "get a list of articles with using pagination",
-                "operationId": "e46814bf5327318b060eb924df0fc8df",
+                "operationId": "2a90814167749bcc78c147adcf293357",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "article",
                         "in": "path",
                         "description": "article's id",
                         "required": true,
@@ -129,6 +125,98 @@
                         "description": "Invalid request"
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Update an existing article",
+                "description": "Update the specified resource in storage.",
+                "operationId": "updateArticle",
+                "parameters": [
+                    {
+                        "name": "article",
+                        "in": "path",
+                        "description": "ID of the article to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "_method": {
+                                        "type": "string",
+                                        "example": "PATCH"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Updated Title"
+                                    },
+                                    "slug": {
+                                        "type": "string",
+                                        "example": "updated-title"
+                                    },
+                                    "poster": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "body": {
+                                        "type": "string",
+                                        "example": "This is an updated article body."
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Article updated successfully"
+                    },
+                    "404": {
+                        "description": "Article not found"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "title": [
+                                                    "The title field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/register": {

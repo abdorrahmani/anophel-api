@@ -11,8 +11,7 @@ class ArticleRequest extends FormRequest
         if ($this->method() === 'PATCH') {
             return [
                 'title' => ['string', "max:255", 'required'],
-                'slug' => ['string', 'max:255', 'required'],
-                'poster' => ['mimes:jpg,jpeg,png,bmp'],
+                'slug' => ['string', 'max:255', 'required','unique:articles'],
                 'body' => ['required'],
                 'category_id' => ['string', 'required'],
             ];
@@ -20,7 +19,7 @@ class ArticleRequest extends FormRequest
 
         return [
             'title' => ['string', 'max:255', 'required'],
-            'slug' => ['string', 'max:255', 'required'],
+            'slug' => ['string', 'max:255', 'required' , 'unique:articles'],
             'poster' => ['mimes:jpg,jpeg,png,bmp', 'required'],
             'body' => ['required'],
             'category_id' => ['string', 'required'],
@@ -31,4 +30,5 @@ class ArticleRequest extends FormRequest
     {
         return true;
     }
+
 }
