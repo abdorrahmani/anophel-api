@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->middleware('api')->prefix('v1')->group(function (){
     Route::post('/register' , 'register');
-    Route::post('/login', 'login');
+    Route::post('/login', 'login')->name('login');
     Route::post('/logout', 'logout');
 
     Route::get('/user' , 'getCurrentUser');

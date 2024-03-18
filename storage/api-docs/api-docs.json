@@ -9,7 +9,7 @@
         "/api/v1/articles": {
             "get": {
                 "tags": [
-                    "articles"
+                    "Articles"
                 ],
                 "summary": "Get a list of articles",
                 "description": "get a list of articles with using pagination",
@@ -22,12 +22,90 @@
                         "description": "Invalid request"
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Create a new article",
+                "description": "Store a newly created resource in storage.",
+                "operationId": "storeArticle",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Sample Title"
+                                    },
+                                    "slug": {
+                                        "type": "string",
+                                        "example": "sample-title"
+                                    },
+                                    "poster": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "body": {
+                                        "type": "string",
+                                        "example": "This is a sample article body."
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "token": {
+                                        "type": "string",
+                                        "example": "YOUR_JWT_TOKEN_HERE"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Article created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "title": [
+                                                    "The title field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/v1/articles/{id}": {
             "get": {
                 "tags": [
-                    "articles"
+                    "Articles"
                 ],
                 "summary": "Get a list of articles",
                 "description": "get a list of articles with using pagination",
@@ -342,6 +420,15 @@
                         "description": "Invalid request"
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     }

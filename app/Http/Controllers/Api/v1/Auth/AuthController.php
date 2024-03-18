@@ -70,7 +70,7 @@ class AuthController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param LoginRequest $request
      * @return Application|ResponseFactory|\Illuminate\Foundation\Application|Response
      * @OA\Post(
      *      path="/api/v1/login",
