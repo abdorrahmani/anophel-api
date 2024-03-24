@@ -465,6 +465,24 @@
                 ]
             }
         },
+        "/api/v1/payments": {
+            "get": {
+                "tags": [
+                    "Payments"
+                ],
+                "summary": "Get a list of payments",
+                "description": "get a list of payments",
+                "operationId": "1b1ca29c4b3e8c120d200bf450f61e75",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    }
+                }
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "tags": [
