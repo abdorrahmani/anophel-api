@@ -4,6 +4,7 @@
 use App\Http\Controllers\Api\v1\ArticlesController;
 use App\Http\Controllers\Api\v1\HomeController;
 use App\Http\Controllers\Api\v1\PaymentController;
+use App\Http\Controllers\Api\v1\Product\BrandController;
 use App\Http\Controllers\Api\v1\Product\ProductCategoryController;
 use App\Http\Controllers\Api\v1\Product\ProductController;
 use App\Http\Controllers\Api\v1\UserController;
@@ -23,6 +24,8 @@ Route::prefix('v1')->middleware('api')->group( function () {
 
     Route::resource('/products/categories' , ProductCategoryController::class);
     Route::resource('/products' , ProductController::class);
+
+    Route::resource('/brands' , BrandController::class);
 
 });
 
