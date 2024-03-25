@@ -32,7 +32,7 @@ class ProductController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return ProductResource::collection(Product::with('category')->get());
+        return ProductResource::collection(Product::with(['category' , 'brand','features'])->get());
     }
 
     /**

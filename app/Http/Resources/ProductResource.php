@@ -20,6 +20,8 @@ class ProductResource extends JsonResource
             'price' => $this->price,
             'image' => $this->image,
 
+            'brand' => $this->brand->name,
+            'features' => $this->features->toArray(),
             'category' => new ProductCategoryResource($this->whenLoaded('category')),
         ];
     }
