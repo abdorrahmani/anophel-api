@@ -8,6 +8,7 @@ use App\Models\Brand;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Response;
 use OpenApi\Annotations as OA;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class BrandController extends Controller
 {
@@ -67,6 +68,42 @@ class BrandController extends Controller
         return Response::json(['message' => 'Brand created successfully'], 201);
     }
 
+    /**
+     * @OA\Get(
+     *      path="/api/v1/brands/{id}",
+     *      operationId="showBrand",
+     *      tags={"Brands"},
+     *      summary="Get a single brand",
+     *      description="Retrieves details of a single Brand.",
+     *      @OA\Parameter(
+     *          name="id",
+     *          description="Brand ID",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="data", example={"name": "name"} ),
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="Brand not found",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Brand not found"),
+     *          )
+     *      ),
+     * )
+     */
+    public function show(Brand $brand): JsonResponse
+    {
+        return response()->json(['data' => $brand], ResponseAlias::HTTP_OK);
+    }
     /**
      * @OA\Post(
      *      path="/api/v1/brands/{id}",
