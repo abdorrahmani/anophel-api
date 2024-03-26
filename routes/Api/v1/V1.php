@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\v1\ArticlesController;
 use App\Http\Controllers\Api\v1\HomeController;
 use App\Http\Controllers\Api\v1\PaymentController;
 use App\Http\Controllers\Api\v1\Product\BrandController;
+use App\Http\Controllers\Api\v1\Product\FeatureController;
 use App\Http\Controllers\Api\v1\Product\ProductCategoryController;
 use App\Http\Controllers\Api\v1\Product\ProductController;
 use App\Http\Controllers\Api\v1\UserController;
@@ -26,7 +27,7 @@ Route::prefix('v1')->middleware('api')->group( function () {
     Route::resource('/products' , ProductController::class);
 
     Route::resource('/brands' , BrandController::class);
-
+    Route::resource('/features' , FeatureController::class);
 });
 
 require __DIR__.'/auth.php';
