@@ -12,15 +12,16 @@ class ProductRequest extends FormRequest
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
-            'slug' => ['required', 'max:15', 'unique:products'],
+            'slug' => ['required', 'max:15'],
             'price' => ['required', 'numeric'],
             'category_id' => ['required', 'exists:product_categories,id'],
             'brand_id' => ['required', 'exists:brands,id'],
-            'features' => ['nullable', 'array']
+            'features' => ['nullable']
         ];
 
         if ($this->method() !== 'PATCH') {
             $rules['image'] = ['required', 'image'];
+            $rules['slug'] = ['required', 'max:15', 'unique:products'];
         }
 
         return $rules;

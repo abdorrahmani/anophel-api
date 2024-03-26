@@ -15,9 +15,15 @@ class Feature extends Model
         'type',
     ];
 
+
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_features');
+    }
+
+    public function product_features()
+    {
+        return $this->hasOne(ProductFeature::class);
     }
 
 }

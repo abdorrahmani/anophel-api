@@ -966,9 +966,20 @@
                                         "type": "integer"
                                     },
                                     "features": {
+                                        "description": "Array of product features (optional)",
                                         "type": "array",
                                         "items": {
-                                            "type": "integer"
+                                            "properties": {
+                                                "feature_id": {
+                                                    "description": "ID of the feature",
+                                                    "type": "integer"
+                                                },
+                                                "value": {
+                                                    "description": "Value of the feature",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     }
                                 },
@@ -1129,10 +1140,8 @@
                                         "type": "integer"
                                     },
                                     "features": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer"
-                                        }
+                                        "description": "JSON string representing an array of features. Example: [{\"feature_id\": 1, \"value\": \"string\"}]",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"

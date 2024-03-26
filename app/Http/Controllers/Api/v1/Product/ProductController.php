@@ -7,11 +7,13 @@ use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ArticlesResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Models\ProductFeature;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use JsonException;
 use OpenApi\Annotations as OA;
 
 class ProductController extends Controller
@@ -32,7 +34,7 @@ class ProductController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return ProductResource::collection(Product::with(['category' , 'brand','features'])->get());
+        return ProductResource::collection(Product::with(['category' , 'brand','features.product_features'])->get());
     }
 
     /**
@@ -54,7 +56,24 @@ class ProductController extends Controller
      *                 @OA\Property(property="image", type="string", format="binary"),
      *                 @OA\Property(property="category_id", type="integer"),
      *                 @OA\Property(property="brand_id", type="integer"),
-     *                 @OA\Property(property="features", type="array", @OA\Items(type="integer")),
+     *               @OA\Property(
+     *                      property="features",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          type="object",
+     *                          @OA\Property(
+     *                              property="feature_id",
+     *                              type="integer",
+     *                              description="ID of the feature"
+     *                          ),
+     *                          @OA\Property(
+     *                              property="value",
+     *                              type="string",
+     *                              description="Value of the feature"
+     *                          )
+     *                      ),
+     *                      description="Array of product features (optional)"
+     *                  ),
      *              )
      *          )
      *     ),
@@ -74,6 +93,7 @@ class ProductController extends Controller
      *          )
      *      )
      * )
+     * @throws JsonException
      */
     public function store(ProductRequest $request): JsonResponse
     {
@@ -96,7 +116,13 @@ class ProductController extends Controller
 
         // Sync features if provided
         if ($request->has('features')) {
-            $product->features()->sync($request->input('features'));
+            foreach (json_decode($request->features, true, 512, JSON_THROW_ON_ERROR) as $feature) {
+                $productFeature = new ProductFeature();
+                $productFeature->product_id = $product->id;
+                $productFeature->feature_id = $feature['feature_id'];
+                $productFeature->value = $feature['value'];
+                $productFeature->save();
+            }
         }
 
         return response()->json(['message' => 'Product created successfully'], 201);
@@ -136,7 +162,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): Response
     {
-        return response(['data' => new ProductResource($product->load('category'))], 200);
+        return response(['data' => new ProductResource($product->load(['category', 'features.product_features','brand']))], 200);
     }
 
     /**
@@ -168,7 +194,11 @@ class ProductController extends Controller
      *                @OA\Property(property="image", type="string", format="binary"),
      *                @OA\Property(property="category_id", type="integer"),
      *                @OA\Property(property="brand_id", type="integer"),
-     *                @OA\Property(property="features", type="array", @OA\Items(type="integer"))
+     *                @OA\Property(
+     *                      property="features",
+     *                      type="string",
+     *                      description="JSON string representing an array of features. Example: [{""feature_id"": 1, ""value"": ""string""}]"
+     *                  ),
      *
      *             )
      *         )
@@ -180,6 +210,13 @@ class ProductController extends Controller
      *              @OA\Property(property="message", type="string", example="Product updated successfully")
      *          )
      *      ),
+     *          @OA\Response(
+     *          response=400,
+     *          description="Invalid JSON format",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="error", type="string", example="Invalid JSON format for features")
+     *          )
+     *      ),
      *      @OA\Response(
      *          response=404,
      *          description="Product not found",
@@ -188,6 +225,7 @@ class ProductController extends Controller
      *          )
      *      ),
      * )
+     * @throws JsonException
      */
     public function update(ProductRequest $request, Product $product): JsonResponse
     {
@@ -205,11 +243,26 @@ class ProductController extends Controller
             $validatedData['image'] = $filename;
         }
         // Update the product with validated data
+
         $product->update($validatedData);
 
         // Sync features if provided
         if ($request->has('features')) {
-            $product->features()->sync($request->input('features'));
+            // Decode JSON string for features into an array
+            $featuresArray = json_decode($request->features, true, 512, JSON_THROW_ON_ERROR);
+            if ($featuresArray !== null) {
+                foreach ($featuresArray as $feature) {
+                    $productFeature = ProductFeature::whereProductId($product->id)
+                        ->whereFeatureId($feature['feature_id'])
+                        ->first();
+                    $productFeature->update(
+                        ['feature_id' => $feature['feature_id'], 'value' => $feature['value']]
+                    );
+                }
+            } else {
+                // Handle invalid JSON format
+                return response()->json(['error' => 'Invalid JSON format for features'], 400);
+            }
         }
 
         // Return a success response
