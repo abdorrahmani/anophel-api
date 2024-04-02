@@ -16,6 +16,7 @@ class ArticlesResource extends JsonResource
             'body' => $this->body,
             'poster' => $this->poster,
             'author' => $this->user->name,
+            'categories' => $this->categories->select('name', 'slug'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'id' => $this->id,

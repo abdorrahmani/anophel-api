@@ -33,7 +33,7 @@ class ArticlesController extends Controller
      */
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return ArticlesResource::collection(Article::with(["user"])->latest()->paginate(15));
+        return ArticlesResource::collection(Article::with(["user", 'categories'])->latest()->paginate(15));
     }
 
     /**
@@ -72,15 +72,8 @@ class ArticlesController extends Controller
      *             @OA\Property(property="errors", type="object", example={"title": {"The title field is required."}})
      *         )
      *     ),
-     *     security={{"bearerAuth": {}}}
      * )
      *
-     * @OA\SecurityScheme(
-     *      securityScheme="bearerAuth",
-     *      type="http",
-     *      scheme="bearer",
-     *      bearerFormat="JWT"
-     *  )
      */
     public function store(ArticleRequest $request): JsonResponse
     {
@@ -91,7 +84,7 @@ class ArticlesController extends Controller
 
         // Create the article
         $article = Article::create([
-            'user_id' => auth()->id(), // Assuming user is authenticated
+            'user_id' => '1', // Assuming user is authenticated
             'title' => $validatedData['title'],
             'slug' => $validatedData['slug'],
             'poster' => $posterPath,

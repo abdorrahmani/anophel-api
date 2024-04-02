@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Article;
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
@@ -20,7 +22,9 @@ class ArticleFactory extends Factory
     {
         return [
             'title' => fake()->realText(20),
-            "user_id" => 1,
+            "user_id" => function () {
+                return User::factory()->create()->id;
+            },
             "slug" => fake()->slug(),
             "body" => fake()->paragraphs(10, true),
             "poster" => fake()->imageUrl(700 , 1200),
@@ -28,4 +32,12 @@ class ArticleFactory extends Factory
             'updated_at' => Carbon::now(),
         ];
     }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (Article $article) {
+            $article->categories()->attach(Category::factory()->create());
+        });
+    }
+
 }

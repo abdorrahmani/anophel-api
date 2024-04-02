@@ -13,7 +13,7 @@ class ArticleRequest extends FormRequest
                 'title' => ['string', "max:255", 'required'],
                 'slug' => ['string', 'max:255', 'required','unique:articles'],
                 'body' => ['required'],
-                'category_id' => ['string', 'required'],
+                'category_id' => ['integer', 'required'],
             ];
         }
 
@@ -22,7 +22,7 @@ class ArticleRequest extends FormRequest
             'slug' => ['string', 'max:255', 'required' , 'unique:articles'],
             'poster' => ['mimes:jpg,jpeg,png,bmp', 'required'],
             'body' => ['required'],
-            'category_id' => ['string', 'required'],
+            'category_id' => ['integer', 'required'],
         ];
     }
 

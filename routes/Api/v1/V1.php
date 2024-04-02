@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->middleware('api')->group( function () {
     Route::get("/" , [HomeController::class , 'index']);
 
-    Route::resource('/articles' , ArticlesController::class);
+    Route::resource('/articles' , ArticlesController::class)->names('v1.articles');
 
     Route::controller(UserController::class)->group (function () {
         Route::get('/users' , 'index');
