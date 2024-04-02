@@ -31,7 +31,7 @@ class FeatureController extends Controller
     /**
      * @OA\Post(
      *      path="/api/v1/features",
-     *      operationId="storeBrand",
+     *      operationId="storeFeature",
      *      tags={"Features"},
      *      summary="Create a new features",
      *      description="Creates a new features with the provided details.",
