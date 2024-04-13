@@ -30,7 +30,7 @@ class ProductCategoryController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return ProductCategoryResource::collection(ProductCategory::all());
+        return ProductCategoryResource::collection(ProductCategory::with('subCategories')->latest()->get());
     }
 
     /**
