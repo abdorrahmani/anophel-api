@@ -18,13 +18,14 @@ return new class extends Migration {
 
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('sub_category_id')->nullable()->constrained('product_sub_categories');  // Optional sub-category
+            $table->foreignId('brand_id')->constrained('brands');
+
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description');
             $table->bigInteger('price');
             $table->string('image');
-            $table->foreignId('category_id')->constrained('product_categories');
-            $table->foreignId('brand_id')->constrained('brands');
             $table->softDeletes();
             $table->timestamps();
         });

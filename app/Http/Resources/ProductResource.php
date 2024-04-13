@@ -22,7 +22,7 @@ class ProductResource extends JsonResource
 
             'brand' => $this->brand->name,
             'features' => $this->features->toArray(),
-            'category' => new ProductCategoryResource($this->whenLoaded('category')),
+            'sub_category' => new ProductSubCategoryResource($this->whenLoaded('subCategory')),
         ];
     }
 }

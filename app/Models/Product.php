@@ -16,14 +16,14 @@ class Product extends Model
         'description',
         'price',
         'image',
-        'category_id',
+        'sub_category_id',
         'brand_id',
         'slug'
     ];
 
-    public function category(): BelongsTo
+    public function subCategory(): BelongsTo
     {
-        return $this->belongsTo(ProductCategory::class);
+        return $this->belongsTo(ProductSubCategory::class , 'sub_category_id');
     }
 
     public function brand(): BelongsTo

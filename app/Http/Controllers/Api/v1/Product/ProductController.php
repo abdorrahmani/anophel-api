@@ -34,7 +34,7 @@ class ProductController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        return ProductResource::collection(Product::with(['category' , 'brand','features.product_features'])->get());
+        return ProductResource::collection(Product::with(['subCategory.category' , 'brand','features.product_features'])->get());
     }
 
     /**
@@ -54,7 +54,7 @@ class ProductController extends Controller
      *                 @OA\Property(property="slug", type="string", maxLength=15),
      *                 @OA\Property(property="price", type="number", format="float"),
      *                 @OA\Property(property="image", type="string", format="binary"),
-     *                 @OA\Property(property="category_id", type="integer"),
+     *                 @OA\Property(property="sub_category_id", type="integer"),
      *                 @OA\Property(property="brand_id", type="integer"),
      *               @OA\Property(
      *                      property="features",
@@ -162,7 +162,7 @@ class ProductController extends Controller
      */
     public function show(Product $product): Response
     {
-        return response(['data' => new ProductResource($product->load(['category', 'features.product_features','brand']))], 200);
+        return response(['data' => new ProductResource($product->load(['subCategory.category', 'features.product_features','brand']))], 200);
     }
 
     /**
@@ -192,7 +192,7 @@ class ProductController extends Controller
      *                @OA\Property(property="slug", type="string", maxLength=15),
      *                @OA\Property(property="price", type="number", format="float"),
      *                @OA\Property(property="image", type="string", format="binary"),
-     *                @OA\Property(property="category_id", type="integer"),
+     *                @OA\Property(property="sub_category_id", type="integer"),
      *                @OA\Property(property="brand_id", type="integer"),
      *                @OA\Property(
      *                      property="features",

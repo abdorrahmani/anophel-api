@@ -1243,7 +1243,7 @@
                                         "type": "string",
                                         "format": "binary"
                                     },
-                                    "category_id": {
+                                    "sub_category_id": {
                                         "type": "integer"
                                     },
                                     "brand_id": {
@@ -1417,7 +1417,7 @@
                                         "type": "string",
                                         "format": "binary"
                                     },
-                                    "category_id": {
+                                    "sub_category_id": {
                                         "type": "integer"
                                     },
                                     "brand_id": {
@@ -1526,7 +1526,8 @@
                                         "maxLength": 100
                                     },
                                     "category_id": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "1"
                                     },
                                     "slug": {
                                         "type": "string",
@@ -1676,7 +1677,7 @@
                                         "maxLength": 255
                                     },
                                     "category_id": {
-                                        "type": "integer"
+                                        "type": "string"
                                     },
                                     "slug": {
                                         "type": "string",

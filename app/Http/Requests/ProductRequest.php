@@ -14,7 +14,7 @@ class ProductRequest extends FormRequest
             'description' => ['required', 'string'],
             'slug' => ['required', 'max:15'],
             'price' => ['required', 'numeric'],
-            'category_id' => ['required', 'exists:product_categories,id'],
+            'sub_category_id' => ['required', 'exists:product_sub_categories,id'],
             'brand_id' => ['required', 'exists:brands,id'],
             'features' => ['nullable']
         ];
