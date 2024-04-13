@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\v1\Product\BrandController;
 use App\Http\Controllers\Api\v1\Product\FeatureController;
 use App\Http\Controllers\Api\v1\Product\ProductCategoryController;
 use App\Http\Controllers\Api\v1\Product\ProductController;
+use App\Http\Controllers\Api\v1\Product\ProductSubCategoryController;
 use App\Http\Controllers\Api\v1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,7 @@ Route::prefix('v1')->middleware('api')->group( function () {
     Route::get('/payments', [PaymentController::class , 'index']);
 
     Route::resource('/products/categories' , ProductCategoryController::class);
+    Route::resource('/products/sub-categories' , ProductSubCategoryController::class);
     Route::resource('/products' , ProductController::class);
 
     Route::resource('/brands' , BrandController::class);
