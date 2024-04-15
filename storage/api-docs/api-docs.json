@@ -460,6 +460,24 @@
                 ]
             }
         },
+        "/api/v1/article/categories": {
+            "get": {
+                "tags": [
+                    "ArticleCategories"
+                ],
+                "summary": "Get a list of article categories",
+                "description": "get a list of article categories",
+                "operationId": "c6fea37391a42adef19eb3a262a57d57",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    }
+                }
+            }
+        },
         "/api/v1/payments": {
             "get": {
                 "tags": [

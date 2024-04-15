@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\Api\v1\ArticlesController;
+use App\Http\Controllers\Api\v1\CategoryController;
 use App\Http\Controllers\Api\v1\HomeController;
 use App\Http\Controllers\Api\v1\PaymentController;
 use App\Http\Controllers\Api\v1\Product\BrandController;
@@ -16,6 +17,7 @@ Route::prefix('v1')->middleware('api')->group( function () {
     Route::get("/" , [HomeController::class , 'index']);
 
     Route::resource('/articles' , ArticlesController::class)->names('v1.articles');
+    Route::get('/article/categories', [CategoryController::class, 'index']);
 
     Route::controller(UserController::class)->group (function () {
         Route::get('/users' , 'index');

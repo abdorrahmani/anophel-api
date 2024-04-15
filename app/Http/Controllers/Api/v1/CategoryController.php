@@ -3,46 +3,33 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\categoryResource;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use OpenApi\Annotations as OA;
 
 class CategoryController extends Controller
 {
-    public function index()
+
+    /**
+     * @return AnonymousResourceCollection
+     *
+     * @OA\Get(
+     *       path="/api/v1/article/categories",
+     *       summary="Get a list of article categories",
+     *       description="get a list of article categories",
+     *       tags={"ArticleCategories"},
+     *
+     *       @OA\Response(response=200, description="Successful operation"),
+     *       @OA\Response(response=400, description="Invalid request")
+     *   )
+     *
+     */
+    public function index(): AnonymousResourceCollection
     {
-        return categoryResource::collection(Category::all());
+        return CategoryResource::collection(Category::all());
     }
 
-    public function store(Request $request)
-    {
-        $data = $request->validate([
 
-        ]);
 
-        return new categoryResource(Category::create($data));
-    }
-
-    public function show(category $category)
-    {
-        return new categoryResource($category);
-    }
-
-    public function update(Request $request, Category $category)
-    {
-        $data = $request->validate([
-
-        ]);
-
-        $category->update($data);
-
-        return new categoryResource($category);
-    }
-
-    public function destroy(Category $category)
-    {
-        $category->delete();
-
-        return response()->json();
-    }
 }
