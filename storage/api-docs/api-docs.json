@@ -1242,43 +1242,53 @@
                     "content": {
                         "multipart/form-data": {
                             "schema": {
+                                "required": [
+                                    "brand_id",
+                                    "name",
+                                    "slug",
+                                    "description",
+                                    "price"
+                                ],
                                 "properties": {
-                                    "name": {
-                                        "type": "string"
+                                    "sub_category_id": {
+                                        "type": "integer",
+                                        "example": 1
                                     },
-                                    "description": {
-                                        "type": "string"
+                                    "brand_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Product Name"
                                     },
                                     "slug": {
                                         "type": "string",
-                                        "maxLength": 15
+                                        "example": "product-name"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Product description"
                                     },
                                     "price": {
-                                        "type": "number",
-                                        "format": "float"
+                                        "type": "integer",
+                                        "example": 10000
                                     },
                                     "image": {
                                         "type": "string",
                                         "format": "binary"
                                     },
-                                    "sub_category_id": {
-                                        "type": "integer"
-                                    },
-                                    "brand_id": {
-                                        "type": "integer"
-                                    },
                                     "features": {
-                                        "description": "Array of product features (optional)",
                                         "type": "array",
                                         "items": {
                                             "properties": {
                                                 "feature_id": {
-                                                    "description": "ID of the feature",
-                                                    "type": "integer"
+                                                    "type": "integer",
+                                                    "example": 1
                                                 },
                                                 "value": {
-                                                    "description": "Value of the feature",
-                                                    "type": "string"
+                                                    "type": "string",
+                                                    "example": "Feature value"
                                                 }
                                             },
                                             "type": "object"
@@ -1307,23 +1317,15 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Validation error",
+                    "400": {
+                        "description": "Bad Request",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "message": {
+                                        "error": {
                                             "type": "string",
-                                            "example": "The given data was invalid."
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "title": [
-                                                    "The title field is required."
-                                                ]
-                                            }
+                                            "example": "Invalid JSON format for features"
                                         }
                                     },
                                     "type": "object"
@@ -1410,40 +1412,52 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "multipart/form-data": {
+                        "application/json": {
                             "schema": {
                                 "properties": {
-                                    "_method": {
-                                        "type": "string",
-                                        "example": "PATCH"
+                                    "sub_category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "brand_id": {
+                                        "type": "integer",
+                                        "example": 1
                                     },
                                     "name": {
-                                        "type": "string"
-                                    },
-                                    "description": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Product Name"
                                     },
                                     "slug": {
                                         "type": "string",
-                                        "maxLength": 15
+                                        "example": "product-name"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Product description"
                                     },
                                     "price": {
-                                        "type": "number",
-                                        "format": "float"
+                                        "type": "integer",
+                                        "example": 10000
                                     },
                                     "image": {
                                         "type": "string",
                                         "format": "binary"
                                     },
-                                    "sub_category_id": {
-                                        "type": "integer"
-                                    },
-                                    "brand_id": {
-                                        "type": "integer"
-                                    },
                                     "features": {
-                                        "description": "JSON string representing an array of features. Example: [{\"feature_id\": 1, \"value\": \"string\"}]",
-                                        "type": "string"
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "feature_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "value": {
+                                                    "type": "string",
+                                                    "example": "Feature value"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
                                     }
                                 },
                                 "type": "object"
@@ -1469,36 +1483,7 @@
                         }
                     },
                     "400": {
-                        "description": "Invalid JSON format",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Invalid JSON format for features"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Product not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Product not found"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Bad Request"
                     }
                 }
             }

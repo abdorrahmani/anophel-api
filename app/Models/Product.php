@@ -33,7 +33,7 @@ class Product extends Model
 
     public function features(): BelongsToMany
     {
-        return $this->belongsToMany(Feature::class, 'product_features');
+        return $this->belongsToMany(Feature::class, 'product_features')->withPivot('value');
     }
 
 

@@ -46,54 +46,45 @@ class ProductController extends Controller
      *      description="Creates a new product with the provided details.",
      *     @OA\RequestBody(
      *         required=true,
-     *          @OA\MediaType(
-     *              mediaType="multipart/form-data",
-     *              @OA\Schema(
-     *                 @OA\Property(property="name", type="string"),
-     *                 @OA\Property(property="description", type="string"),
-     *                 @OA\Property(property="slug", type="string", maxLength=15),
-     *                 @OA\Property(property="price", type="number", format="float"),
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 required={"brand_id", "name", "slug", "description", "price"},
+     *                 @OA\Property(property="sub_category_id", type="integer", example=1),
+     *                 @OA\Property(property="brand_id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Product Name"),
+     *                 @OA\Property(property="slug", type="string", example="product-name"),
+     *                 @OA\Property(property="description", type="string", example="Product description"),
+     *                 @OA\Property(property="price", type="integer", example=10000),
      *                 @OA\Property(property="image", type="string", format="binary"),
-     *                 @OA\Property(property="sub_category_id", type="integer"),
-     *                 @OA\Property(property="brand_id", type="integer"),
-     *               @OA\Property(
+     *                 @OA\Property(
      *                      property="features",
      *                      type="array",
      *                      @OA\Items(
      *                          type="object",
-     *                          @OA\Property(
-     *                              property="feature_id",
-     *                              type="integer",
-     *                              description="ID of the feature"
-     *                          ),
-     *                          @OA\Property(
-     *                              property="value",
-     *                              type="string",
-     *                              description="Value of the feature"
-     *                          )
-     *                      ),
-     *                      description="Array of product features (optional)"
-     *                  ),
+     *                          @OA\Property(property="feature_id", type="integer", example=1),
+     *                          @OA\Property(property="value", type="string", example="Feature value")
+     *                      )
+     *                  )
      *              )
      *          )
-     *     ),
-     *      @OA\Response(
-     *          response=201,
-     *          description="Product created successfully",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Product created successfully")
-     *          )
      *      ),
-     *      @OA\Response(
-     *          response=422,
-     *          description="Validation error",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="The given data was invalid."),
-     *              @OA\Property(property="errors", type="object", example={"title": {"The title field is required."}} )
-     *          )
-     *      )
+     *     @OA\Response(
+     *         response=201,
+     *         description="Product created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Product created successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Invalid JSON format for features")
+     *         )
+     *     )
      * )
-     * @throws JsonException
      */
     public function store(ProductRequest $request): JsonResponse
     {
@@ -114,14 +105,21 @@ class ProductController extends Controller
         // Create the product
         $product = Product::create($validatedData);
 
-        // Sync features if provided
         if ($request->has('features')) {
-            foreach (json_decode($request->features, true, 512, JSON_THROW_ON_ERROR) as $feature) {
-                $productFeature = new ProductFeature();
-                $productFeature->product_id = $product->id;
-                $productFeature->feature_id = $feature['feature_id'];
-                $productFeature->value = $feature['value'];
-                $productFeature->save();
+            $featuresArray = $request->input('features');
+
+            if (is_array($featuresArray)) {
+                foreach ($featuresArray as $featureData) {
+                    $feature = json_decode($featureData, true, 512, JSON_THROW_ON_ERROR);
+
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $product->features()->attach($feature['feature_id'], ['value' => $feature['value']]);
+                    } else {
+                        return response()->json(['error' => 'Invalid JSON format for features'], 400);
+                    }
+                }
+            } else {
+                return response()->json(['error' => 'Features should be an array'], 400);
             }
         }
 
@@ -172,60 +170,44 @@ class ProductController extends Controller
      *      tags={"Products"},
      *      summary="Update a product",
      *      description="Updates details of an existing product.",
-     *      @OA\Parameter(
-     *          name="id",
-     *          description="Product ID",
-     *          required=true,
-     *          in="path",
-     *          @OA\Schema(
-     *              type="integer"
-     *          )
-     *      ),
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         description="Product ID"
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *             @OA\Schema(
-     *                @OA\Property(property="_method", type="string", example="PATCH"),
-     *                @OA\Property(property="name", type="string"),
-     *                @OA\Property(property="description", type="string"),
-     *                @OA\Property(property="slug", type="string", maxLength=15),
-     *                @OA\Property(property="price", type="number", format="float"),
-     *                @OA\Property(property="image", type="string", format="binary"),
-     *                @OA\Property(property="sub_category_id", type="integer"),
-     *                @OA\Property(property="brand_id", type="integer"),
-     *                @OA\Property(
-     *                      property="features",
-     *                      type="string",
-     *                      description="JSON string representing an array of features. Example: [{""feature_id"": 1, ""value"": ""string""}]"
-     *                  ),
-     *
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="sub_category_id", type="integer", example=1),
+     *             @OA\Property(property="brand_id", type="integer", example=1),
+     *             @OA\Property(property="name", type="string", example="Product Name"),
+     *             @OA\Property(property="slug", type="string", example="product-name"),
+     *             @OA\Property(property="description", type="string", example="Product description"),
+     *             @OA\Property(property="price", type="integer", example=10000),
+     *             @OA\Property(property="image", type="string", format="binary"),
+     *             @OA\Property(
+     *                 property="features",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="feature_id", type="integer", example=1),
+     *                     @OA\Property(property="value", type="string", example="Feature value")
+     *                 )
      *             )
      *         )
      *     ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Product updated successfully",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Product updated successfully")
-     *          )
-     *      ),
-     *          @OA\Response(
-     *          response=400,
-     *          description="Invalid JSON format",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="error", type="string", example="Invalid JSON format for features")
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=404,
-     *          description="Product not found",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="message", type="string", example="Product not found")
-     *          )
-     *      ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Product updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Product updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Bad Request")
      * )
-     * @throws JsonException
      */
     public function update(ProductRequest $request, Product $product): JsonResponse
     {
@@ -248,17 +230,14 @@ class ProductController extends Controller
 
         // Sync features if provided
         if ($request->has('features')) {
-            // Decode JSON string for features into an array
             $featuresArray = json_decode($request->features, true, 512, JSON_THROW_ON_ERROR);
+
             if ($featuresArray !== null) {
+                $syncData = [];
                 foreach ($featuresArray as $feature) {
-                    $productFeature = ProductFeature::whereProductId($product->id)
-                        ->whereFeatureId($feature['feature_id'])
-                        ->first();
-                    $productFeature->update(
-                        ['feature_id' => $feature['feature_id'], 'value' => $feature['value']]
-                    );
+                    $syncData[$feature['feature_id']] = ['value' => $feature['value']];
                 }
+                $product->features()->sync($syncData);
             } else {
                 // Handle invalid JSON format
                 return response()->json(['error' => 'Invalid JSON format for features'], 400);
