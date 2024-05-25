@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\v1\Product\FeatureController;
 use App\Http\Controllers\Api\v1\Product\ProductCategoryController;
 use App\Http\Controllers\Api\v1\Product\ProductController;
 use App\Http\Controllers\Api\v1\Product\ProductSubCategoryController;
+use App\Http\Controllers\Api\v1\Transaction\TransactionController;
 use App\Http\Controllers\Api\v1\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,11 @@ Route::prefix('v1')->middleware('api')->group( function () {
 
     Route::resource('/brands' , BrandController::class);
     Route::resource('/features' , FeatureController::class);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/payment/request', [TransactionController::class, 'create']);
+        Route::post('/payment/verify', [TransactionController::class, 'verify']);
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -1743,6 +1743,79 @@
                 }
             }
         },
+        "/api/v1/payment/request": {
+            "post": {
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Create a new transaction",
+                "operationId": "989c5a63d30874283a2699953f898ebc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "amount": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 100000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Transaction created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                }
+            }
+        },
+        "/api/v1/payment/verify": {
+            "post": {
+                "tags": [
+                    "Transaction"
+                ],
+                "summary": "Verify a transaction",
+                "operationId": "c3f5d6ba42e4de06ec3e656a4d48e28b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "authority"
+                                ],
+                                "properties": {
+                                    "authority": {
+                                        "type": "string",
+                                        "example": "5f8f8c44d6e36"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transaction verified successfully"
+                    },
+                    "400": {
+                        "description": "Transaction already verified or failed"
+                    }
+                }
+            }
+        },
         "/api/v1/users": {
             "get": {
                 "tags": [
