@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "darkaonline/l5-swagger": "^8.6",
+        "darkaonline/l5-swagger": "^9.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^11.0",
         "laravel/passport": "^12.0",
